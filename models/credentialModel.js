@@ -1,29 +1,28 @@
 'use strict'
 
-function credentialModel (sequelize, DataTypes) {
-  const credentialModel = sequelize.define(
-    'credential',
-    {
-      user_id: DataTypes.INTEGER,
-      password: {
-        type: DataTypes.BLOB,
-        get: function () {
-          return (this.getDataValue('password')).toString('utf8')
+function credentialModel (sequalize, DataTypes) {
+    const credentialModel = sequalize.define(
+        'credential',
+        {
+            user_id: DataTypes.INTEGER,
+            password: {
+                type: DataTypes.STRING,
+                get: function() {
+                    return (this.getDataValue("password")).toString('utf8')
+                }
+            },
+            timestamp_created: DataTypes.STRING
+        },
+        {
+            freezeTableName: false,
+            timestamps: false
         }
-      },
-      timestamp_created: DataTypes.DATE
-    },
-    {
-      timestamps: false,
-      freezeTableName: false
+    )
+    credentialModel.associate=(models)=>{
+        credentialModel.belongsTo(models.User,{
+            foreignKey: 'user_id'
+        })
     }
-  )
-  credentialModel.associate = (models) => {
-    credentialModel.belongsTo(models.User, {
-      foreignKey: 'user_id'
-    })
-  }
-  return credentialModel
+    return credentialModel
 }
-
 module.exports = credentialModel
