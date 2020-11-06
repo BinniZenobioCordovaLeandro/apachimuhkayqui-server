@@ -6,6 +6,7 @@ function credentialModel (sequelize, DataTypes) {
     {
       user_id: DataTypes.INTEGER,
       password: {
+        type: DataTypes.STRING,
         type: DataTypes.BLOB,
         get: function () {
           return (this.getDataValue('password')).toString('utf8')
