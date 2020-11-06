@@ -6,12 +6,12 @@ function credentialModel (sequelize, DataTypes) {
     {
       user_id: DataTypes.INTEGER,
       password: {
-        type: DataTypes.BLOB,
+        type: DataTypes.STRING,
         get: function () {
           return (this.getDataValue('password')).toString('utf8')
         }
       },
-      timestamp_created: DataTypes.DATE
+      timestamp_created: DataTypes.STRING
     },
     {
       timestamps: false,
@@ -25,5 +25,4 @@ function credentialModel (sequelize, DataTypes) {
   }
   return credentialModel
 }
-
 module.exports = credentialModel

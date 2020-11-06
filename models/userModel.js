@@ -1,7 +1,7 @@
 'use strict'
 
-function userModel (sequelize, DataTypes) {
-  const userModel = sequelize.define(
+function userModel (sequalize, DataTypes) {
+  const userModel = sequalize.define(
     'user',
     {
       fullname: DataTypes.STRING,
@@ -11,8 +11,8 @@ function userModel (sequelize, DataTypes) {
       document: DataTypes.CHAR
     },
     {
-      timestamps: false,
-      freezeTableName: false
+      freezeTableName: false,
+      timestamps: false
     }
   )
   userModel.associate = (models) => {
@@ -22,5 +22,4 @@ function userModel (sequelize, DataTypes) {
   }
   return userModel
 }
-
 module.exports = userModel
