@@ -8,7 +8,8 @@ var schema = buildSchema(`
   type Query {
     hello: String,
     Users: [User],
-    Credentials: Credential
+    Credentials: [Credential],
+    Cards: [Card]
   }
   type Mutation{
     createUser(data: inputUser): User,
