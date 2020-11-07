@@ -35,15 +35,6 @@ User.associate({ Credential: Credential,
   Item: Item,
   Order: Order,
   Transaction: Transaction})
-
-Item.associate({ Instance_item: Instance_item })
-
-const sequelize = new Sequelize('mysql://bcordova:Platanit05@3.208.60.34:3306/apachimuhkayqui')
-
-const User = UserModel(sequelize, Sequelize)
-const Credential = CredentialModel(sequelize, Sequelize)
-
-User.associate({ Credential: Credential })
 Credential.associate({ User: User })
 
 module.exports = {
