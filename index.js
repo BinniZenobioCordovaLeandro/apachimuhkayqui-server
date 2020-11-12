@@ -53,7 +53,6 @@ type Query {
     email: String,
     phone: Int,
     document: Int,
-<<<<<<< HEAD
     credentials: [Credential],
     cards: [Card],
     items: [Item],
