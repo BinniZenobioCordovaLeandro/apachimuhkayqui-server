@@ -1,11 +1,13 @@
-var express = require('express')
-var { graphqlHTTP } = require('express-graphql')
-var { buildSchema } = require('graphql')
+const express = require('express')
+const { graphqlHTTP } = require('express-graphql')
+const { buildSchema } = require('graphql')
 
-const { User, Credential, Card, Detail_order, Image, Instanceitem, Item,
- Lpn, Offer, Order, StatusOrder, Store, Transaction } = require('./models/index')
+const {
+  User, Credential, Card, DetailOrder, Image, InstanceItem, Item,
+  Lpn, Offer, Order, StatusOrder, Store, Transaction
+} = require('./models/index')
 
-var schema = buildSchema(`
+const schema = buildSchema(`
   type Query {
     hello: String
     Users: [User],
@@ -21,9 +23,9 @@ var schema = buildSchema(`
     createUser(data: inputUser): User,
     createCredential(data: inputCredential): Credential,
     createCard(data: inputCard): Card,
-    createDetail_order(data: inputDetail_order): Detail_order,
+    createDetaiOrder(data: inputDetailOrder): DetailOrder,
     createImage(data: inputImage): Image,
-    createInstanceitem(data: inputInstanceitem): Instanceitem,
+    createInstanceItem(data: inputInstanceItem): InstanceItem,
     createItem(data: inputItem): Item,
     createLpn(data: inputLpn): Lpn,
     createOffer(data: inputOffer): Offer,
@@ -49,10 +51,10 @@ var schema = buildSchema(`
     document: Int,
     credentials: [Credential],
     cards: [Card],
-    Stores:[Store],
-    Items:[Item],
-    Transactions: [Transaction],
-    Orders: [Order]
+    stores:[Store],
+    items:[Item],
+    transactions: [Transaction],
+    orders: [Order]
   }
   input inputCredential {
     user_id: Int,
@@ -80,13 +82,13 @@ var schema = buildSchema(`
     timestamp_modified: String,
     timestamp_created: String
   }
-  input inputDetail_order {
+  input inputDetailOrder {
   order_id: Int,
   lpn_id: Int,
   timestamp_modified: String,
   timestamp_created: String
   }
-  type Detail_order {
+  type DetailOrder {
     id: Int,
     order_id: Int,
     lpn_id: Int,
@@ -102,7 +104,7 @@ var schema = buildSchema(`
       instance_item_id: Int,
       url: String
     }
-  input inputInstanceitem {
+  input inputInstanceItem {
     item_id: Int,
     talla: Int,
     volumen: Int,
@@ -111,7 +113,7 @@ var schema = buildSchema(`
     image: String,
     description: String
   }
-  type Instanceitem {
+  type InstanceItem {
     id: Int,
     item_id: Int,
     talla: Int,
@@ -225,77 +227,77 @@ var schema = buildSchema(`
 
 `)
 
-var root = {
+const root = {
   hello: () => 'Hello world!',
-  Users: ()=>{
-    return new Promise((resolve, reject)=>{
-      User.findAll({include: Credential})
-      .then((result) => {
-        console.log(result)
-        resolve(result)
-      }).catch((err) => {
-        reject(err)
-      })
+  Users: () => {
+    return new Promise((resolve, reject) => {
+      User.findAll({ include: Credential })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
     })
   },
   hello: () => 'Hello world!',
-  Users: ()=>{
-    return new Promise((resolve, reject)=>{
-      User.findAll({include: Card})
-      .then((result) => {
-        console.log(result)
-        resolve(result)
-      }).catch((err) => {
-        reject(err)
-      })
+  Users: () => {
+    return new Promise((resolve, reject) => {
+      User.findAll({ include: Card })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
     })
   },
   hello: () => 'Hello world!',
-  Users: ()=>{
-    return new Promise((resolve, reject)=>{
-      User.findAll({include: Store})
-      .then((result) => {
-        console.log(result)
-        resolve(result)
-      }).catch((err) => {
-        reject(err)
-      })
+  Users: () => {
+    return new Promise((resolve, reject) => {
+      User.findAll({ include: Store })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
     })
   },
   hello: () => 'Hello world!',
-  Users: ()=>{
-    return new Promise((resolve, reject)=>{
-      User.findAll({include: Item})
-      .then((result) => {
-        console.log(result)
-        resolve(result)
-      }).catch((err) => {
-        reject(err)
-      })
+  Users: () => {
+    return new Promise((resolve, reject) => {
+      User.findAll({ include: Item })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
     })
   },
   hello: () => 'Hello world!',
-  Users: ()=>{
-    return new Promise((resolve, reject)=>{
-      User.findAll({include: Transaction})
-      .then((result) => {
-        console.log(result)
-        resolve(result)
-      }).catch((err) => {
-        reject(err)
-      })
+  Users: () => {
+    return new Promise((resolve, reject) => {
+      User.findAll({ include: Transaction })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
     })
   },
   hello: () => 'Hello world!',
-  Users: ()=>{
-    return new Promise((resolve, reject)=>{
-      User.findAll({include: Order})
-      .then((result) => {
-        console.log(result)
-        resolve(result)
-      }).catch((err) => {
-        reject(err)
-      })
+  Users: () => {
+    return new Promise((resolve, reject) => {
+      User.findAll({ include: Order })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
     })
   },
   createUser: (input) => {
@@ -328,9 +330,9 @@ var root = {
         })
     })
   },
-  createDetail_order: (input) => {
+  createDetailOrder: (input) => {
     return new Promise((resolve, reject) => {
-      Detail_order.create(JSON.parse(JSON.stringify(input.data)))
+      DetailOrder.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
@@ -348,9 +350,9 @@ var root = {
         })
     })
   },
-  createInstanceitem: (input) => {
+  createInstanceItem: (input) => {
     return new Promise((resolve, reject) => {
-      Instanceitem.create(JSON.parse(JSON.stringify(input.data)))
+      InstanceItem.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
@@ -361,76 +363,76 @@ var root = {
   createItem: (input) => {
     return new Promise((resolve, reject) => {
       Item.create(JSON.parse(JSON.stringify(input.data)))
-       .then((result) => {
-        resolve(result)
+        .then((result) => {
+          resolve(result)
         }).catch((err) => {
-        reject(err)
-      })
-   })
+          reject(err)
+        })
+    })
   },
   createLpn: (input) => {
     return new Promise((resolve, reject) => {
       Lpn.create(JSON.parse(JSON.stringify(input.data)))
-       .then((result) => {
-        resolve(result)
+        .then((result) => {
+          resolve(result)
         }).catch((err) => {
-        reject(err)
-      })
-   })
+          reject(err)
+        })
+    })
   },
   createOffer: (input) => {
     return new Promise((resolve, reject) => {
       Offer.create(JSON.parse(JSON.stringify(input.data)))
-       .then((result) => {
-        resolve(result)
+        .then((result) => {
+          resolve(result)
         }).catch((err) => {
-        reject(err)
-      })
-   })
+          reject(err)
+        })
+    })
   },
   createOrder: (input) => {
     return new Promise((resolve, reject) => {
       Order.create(JSON.parse(JSON.stringify(input.data)))
-       .then((result) => {
-        resolve(result)
+        .then((result) => {
+          resolve(result)
         }).catch((err) => {
-        reject(err)
-      })
-   })
+          reject(err)
+        })
+    })
   },
   createStatusOrder: (input) => {
     return new Promise((resolve, reject) => {
       StatusOrder.create(JSON.parse(JSON.stringify(input.data)))
-       .then((result) => {
-        resolve(result)
+        .then((result) => {
+          resolve(result)
         }).catch((err) => {
-        reject(err)
-      })
-   })
+          reject(err)
+        })
+    })
   },
   createStore: (input) => {
     return new Promise((resolve, reject) => {
       Store.create(JSON.parse(JSON.stringify(input.data)))
-       .then((result) => {
-        resolve(result)
+        .then((result) => {
+          resolve(result)
         }).catch((err) => {
-        reject(err)
-      })
-   })
+          reject(err)
+        })
+    })
   },
   createTransaction: (input) => {
     return new Promise((resolve, reject) => {
       Transaction.create(JSON.parse(JSON.stringify(input.data)))
-       .then((result) => {
-        resolve(result)
+        .then((result) => {
+          resolve(result)
         }).catch((err) => {
-        reject(err)
-      })
-   })
+          reject(err)
+        })
+    })
   }
 }
 
-var app = express()
+const app = express()
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
