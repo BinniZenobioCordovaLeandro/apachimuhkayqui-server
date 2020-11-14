@@ -39,19 +39,19 @@ User.associate({
 })
 Order.associate({
   User: User,
-  Status_order: StatusOrder,
+  StatusOrder: StatusOrder,
   Transaction: Transaction,
-  Detail_order: DetailOrder
+  DetailOrder: DetailOrder
 })
 Item.associate({
   User: User,
-  Instance_item: InstanceItem,
+  InstanceItem: InstanceItem,
   Offer: Offer
 })
-Image.associate({ Instance_item: InstanceItem })
+Image.associate({ InstanceItem: InstanceItem })
 Lpn.associate({
-  Instance_item: InstanceItem,
-  Detail_order: DetailOrder
+  InstanceItem: InstanceItem,
+  DetailOrder: DetailOrder
 })
 DetailOrder.associate({
   Lpn: Lpn,

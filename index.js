@@ -1,12 +1,10 @@
-let express = require('express')
-let { graphqlHTTP } = require('express-graphql')
-let { buildSchema } = require('graphql')
-const detailOrderModel = require('./models/detailOrderModel')
+const express = require('express')
+const { graphqlHTTP } = require('express-graphql')
+const { buildSchema } = require('graphql')
 
-const { User, Credential, Card, DetailOrder, Image, Instance_item, Item, Lpn, Offer, Order, StatusOrder, Store, Transaction } = require('./models/index')
-const userModel = require('./models/userModel')
+const { User, Credential, Card, DetailOrder, Image, InstanceItem, Item, Lpn, Offer, Order, StatusOrder, Store, Transaction } = require('./models/index')
 
-let schema = buildSchema(`
+const schema = buildSchema(`
 type Query {
   hello: String,
   Users: [User],
@@ -14,14 +12,14 @@ type Query {
   Cards: [Card],
   Stores: [Store],
   Orders: [Order],
-  Status_orders: [Status_order],
+  Status_orders: [StatusOrder],
   Transactions: [Transaction],
   Items: [Item],
   Offers: [Offer],
-  InstanceItems: [InstanceItem],
+  Instance_items: [InstanceItem],
   Images: [Image],
   Lpns: [Lpn],
-  DetailOrders: [DetailOrder]
+  Detail_orders: [DetailOrder]
 }
   type Mutation{
     createUser(data: inputUser): User,
@@ -139,7 +137,7 @@ type Query {
     user_id: Int,
     description: String
     offers: [Offer]
-    instance_items: [Instance_item]
+    instance_items: [InstanceItem]
   }
   input inputLpn {
     instance_item_id: Int,
@@ -149,7 +147,7 @@ type Query {
     id: Int,
     instance_item_id: Int,
     lpn: Int
-    detail_orders: [Detail_order]
+    detail_orders: [DetailOrder]
   }
   input inputOffer {
     item_id: Int,
@@ -179,8 +177,8 @@ type Query {
     timestamp_modified: String,
     timestamp_created: String
     transactions: [Transaction]
-    status_orders: [Status_order]
-    detail_orders: [Detail_order]
+    status_orders: [StatusOrder]
+    detail_orders: [DetailOrder]
   }
   input inputStatusOrder {
     order_id: Int,
@@ -239,8 +237,8 @@ type Query {
   }
 `)
 
-let root = {
-  hello: () => 'Hello world', /*user-start */
+const root = {
+  hello: () => 'Hello world', /* user-start */
   Users: () => {
     return new Promise((resolve, reject) => {
       User.findAll({ include: Credential })
@@ -252,65 +250,6 @@ let root = {
         })
     })
   },
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Card })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Store })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Order })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Transaction })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Item })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  /*------user-end------ */
-  /*------user-end------ */
-  /*------order-start------ */
-  /*------order-start------ */
   Orders: () => {
     return new Promise((resolve, reject) => {
       Order.findAll({ include: Transaction })
@@ -322,32 +261,6 @@ let root = {
         })
     })
   },
-  Orders: () => {
-    return new Promise((resolve, reject) => {
-      Order.findAll({ include: Detail_order })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Orders: () => {
-    return new Promise((resolve, reject) => {
-      Order.findAll({ include: Status_order })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  /*------order-end------ */
-  /*------order-end------ */
-  /*------item-start------ */
-  /*------item-start------ */
   Items: () => {
     return new Promise((resolve, reject) => {
       Item.findAll({ include: Offer })
@@ -359,9 +272,9 @@ let root = {
         })
     })
   },
-  Items: () => {
+  InstanceItems: () => {
     return new Promise((resolve, reject) => {
-      Item.findAll({ include: Instance_item })
+      InstanceItem.findAll({ include: Image })
         .then((result) => {
           console.log(result)
           resolve(result)
@@ -370,39 +283,9 @@ let root = {
         })
     })
   },
-  /*------item-end------ */
-  /*------item-end------ */
-  /*------instance-item-start------ */
-  /*------instance-item-start------ */
-  Instance_items: () => {
-    return new Promise((resolve, reject) => {
-      Instance_item.findAll({ include: Image })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Instance_items: () => {
-    return new Promise((resolve, reject) => {
-      Instance_item.findAll({ include: Lpn })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  /*------instance-item-end------ */
-  /*------instance-item-end------ */
-  /*------lpn-start------ */
-  /*------lpn-start------ */
   Lpns: () => {
     return new Promise((resolve, reject) => {
-      Lpn.findAll({ include: Detail_order })
+      Lpn.findAll({ include: DetailOrder })
         .then((result) => {
           console.log(result)
           resolve(result)
@@ -411,8 +294,8 @@ let root = {
         })
     })
   },
-  /*------lpn-end------ */
-  /*------lpn-end------ */
+  /* ------lpn-end------ */
+  /* ------lpn-end------ */
   createUser: (input) => {
     return new Promise((resolve, reject) => {
       User.create(JSON.parse(JSON.stringify(input.data)))
@@ -433,9 +316,9 @@ let root = {
         })
     })
   },
-  createDetail_order: (input) => {
+  createDetailOrder: (input) => {
     return new Promise((resolve, reject) => {
-      Detail_order.create(JSON.parse(JSON.stringify(input.data)))
+      DetailOrder.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
@@ -463,9 +346,9 @@ let root = {
         })
     })
   },
-  createInstance_item: (input) => {
+  createInstanceItem: (input) => {
     return new Promise((resolve, reject) => {
-      Instance_item.create(JSON.parse(JSON.stringify(input.data)))
+      InstanceItem.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
@@ -513,9 +396,9 @@ let root = {
         })
     })
   },
-  createStatus_order: (input) => {
+  createStatusOrder: (input) => {
     return new Promise((resolve, reject) => {
-      Status_order.create(JSON.parse(JSON.stringify(input.data)))
+      StatusOrder.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
@@ -544,7 +427,7 @@ let root = {
     })
   }
 }
-let app = express()
+const app = express()
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
