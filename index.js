@@ -2,18 +2,20 @@ var express = require('express')
 var { graphqlHTTP } = require('express-graphql')
 var { buildSchema } = require('graphql')
 
-const { User, Credential, Card } = require('./models/index')
+const { User, Credential, Card, Item } = require('./models/index')
 
 var schema = buildSchema(`
   type Query {
     Users: [User],
     Credentials: [Credential],
-    Cards: [Card]
+    Cards: [Card],
+    Items: [Item]
   }
   type Mutation{
     createUser(data: inputUser): User,
     createCredential(data: inputCredential): Credential
-    createCard(data: inputCard): Card
+    createCard(data: inputCard): Card,
+    createItem(data: inputItem): Item
   }
   input inputUser {
     fullname: String,
@@ -59,6 +61,22 @@ var schema = buildSchema(`
     timestamp_created: String,
     user: User
   }
+  input inputItem {
+    user_id: Int,
+    brand: String,
+    model: String,
+    description: String,
+    decimal: Float
+  }
+  type Item {
+    id: Int,
+    user_id: Int,
+    brand: String,
+    model: String,
+    description: String,
+    decimal: Float,
+    user: User
+  }
 `)
 
 var root = {
@@ -70,13 +88,19 @@ var root = {
     ),
   Credentials: () =>
     new Promise((resolve, reject) =>
-      Credential.findAll()
+      Credential.findAll({ include: [User] })
         .then((result) => resolve(result))
         .catch((err) => reject(err))
     ),
   Cards: () =>
     new Promise((resolve, reject) =>
       Card.findAll({ include: [User] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Items: () =>
+    new Promise((resolve, reject) =>
+      Item.findAll({ include: [User] })
         .then((result) => resolve(result))
         .catch((err) => reject(err))
     ),
@@ -95,6 +119,12 @@ var root = {
   createCard: (input) =>
     new Promise((resolve, reject) =>
       Card.create(JSON.parse(JSON.stringify(input.data)))
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createItem: (input) =>
+    new Promise((resolve, reject) =>
+      Item.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => resolve(result))
         .catch((err) => reject(err))
     )
