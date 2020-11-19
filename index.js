@@ -2,17 +2,18 @@ var express = require('express')
 var { graphqlHTTP } = require('express-graphql')
 var { buildSchema } = require('graphql')
 
-const { User, Credential } = require('./models/index')
+const { User, Credential, Card } = require('./models/index')
 
 var schema = buildSchema(`
   type Query {
-    hello: String,
     Users: [User],
-    Credentials: Credential
+    Credentials: [Credential],
+    Cards: [Card]
   }
   type Mutation{
     createUser(data: inputUser): User,
     createCredential(data: inputCredential): Credential
+    createCard(data: inputCard): Card
   }
   input inputUser {
     fullname: String,
@@ -28,7 +29,8 @@ var schema = buildSchema(`
     email: String,
     phone: Int,
     document: Int,
-    credentials: [Credential]
+    credentials: [Credential],
+    cards: [Card]
   }
   input inputCredential {
     user_id: Int,
@@ -41,40 +43,61 @@ var schema = buildSchema(`
     password: String,
     timestamp_created: String
   }
+  input inputCard {
+    user_id: Int,
+    number: Int,
+    expiration: String,
+    timestamp_modified: String,
+    timestamp_created: String
+  }
+  type Card {
+    id: Int,
+    user_id: Int,
+    number: Int,
+    expiration: String,
+    timestamp_modified: String,
+    timestamp_created: String,
+    user: User
+  }
 `)
 
 var root = {
-  hello: () => 'Hello world!',
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Credential })
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createUser: (input) => {
-    return new Promise((resolve, reject) => {
+  Users: () =>
+    new Promise((resolve, reject) =>
+      User.findAll({ include: [Credential, Card] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Credentials: () =>
+    new Promise((resolve, reject) =>
+      Credential.findAll()
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Cards: () =>
+    new Promise((resolve, reject) =>
+      Card.findAll({ include: [User] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createUser: (input) =>
+    new Promise((resolve, reject) =>
       User.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createCredential: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createCredential: (input) =>
+    new Promise((resolve, reject) =>
       Credential.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  }
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createCard: (input) =>
+    new Promise((resolve, reject) =>
+      Card.create(JSON.parse(JSON.stringify(input.data)))
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    )
 }
 
 var app = express()
