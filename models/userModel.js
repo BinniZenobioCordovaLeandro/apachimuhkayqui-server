@@ -19,6 +19,9 @@ function userModel (sequelize, DataTypes) {
     userModel.hasMany(models.Credential, {
       foreignKey: 'user_id'
     })
+    userModel.hasMany(models.Card, {
+      foreignKey: 'user_id'
+    })
   }
   return userModel
 }
