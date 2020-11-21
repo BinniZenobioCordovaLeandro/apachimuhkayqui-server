@@ -5,7 +5,16 @@ function itemModel (sequalize, DataTypes) {
     'item',
     {
       user_id: DataTypes.INTEGER,
-      description: DataTypes.STRING
+      brand: DataTypes.STRING,
+      model: DataTypes.STRING,
+      description: DataTypes.STRING,
+      price: DataTypes.DECIMAL,
+      image: {
+        type: DataTypes.BLOB,
+        get: function () {
+          return (this.getDataValue('image')).toString('utf8')
+        }
+      }
     },
     {
       freezeTableName: false,
@@ -15,6 +24,9 @@ function itemModel (sequalize, DataTypes) {
   itemModel.associate = (models) => {
     itemModel.belongsTo(models.User, {
       foreignKey: 'user_id'
+    })
+    itemModel.hasMany(models.Offer, {
+      foreignKey: 'item_id'
     })
   }
   return itemModel

@@ -12,6 +12,8 @@ const OrderModel = require('./orderModel')
 const StatusOrderModel = require('./statusOrderModel')
 const StoreModel = require('./storeModel')
 const TransactionModel = require('./transactionModel')
+const BreadCrumbModel = require('./breadCrumbModel')
+const ItemBreadCrumbModel = require('./itemBreadCrumbModel')
 
 const sequelize = new Sequelize('mysql://root@127.0.0.1:3306/apachimuchkayqui')
 
@@ -28,6 +30,8 @@ const Order = OrderModel(sequelize, Sequelize)
 const StatusOrder = StatusOrderModel(sequelize, Sequelize)
 const Store = StoreModel(sequelize, Sequelize)
 const Transaction = TransactionModel(sequelize, Sequelize)
+const BreadCrumb = BreadCrumbModel(sequelize, Sequelize)
+const ItemBreadCrumb = ItemBreadCrumbModel(sequelize, Sequelize)
 
 User.associate({
   Credential: Credential,
@@ -38,6 +42,7 @@ User.associate({
   Order: Order
 })
 Credential.associate({ User: User })
+Item.associate({ Offer:Offer, User:User,})
 
 module.exports = {
   User,
@@ -52,5 +57,7 @@ module.exports = {
   Order,
   StatusOrder,
   Store,
-  Transaction
+  Transaction,
+  BreadCrumb,
+  ItemBreadCrumb
 }

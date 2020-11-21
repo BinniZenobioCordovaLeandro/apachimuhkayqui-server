@@ -4,7 +4,7 @@ const { buildSchema } = require('graphql')
 
 const {
   User, Credential, Card, DetailOrder, Image, InstanceItem, Item,
-  Lpn, Offer, Order, StatusOrder, Store, Transaction
+  Lpn, Offer, Order, StatusOrder, Store, Transaction, BreadCrumb, ItemBreadCrumb
 } = require('./models/index')
 
 const schema = buildSchema(`
@@ -32,7 +32,9 @@ const schema = buildSchema(`
     createOrder(data: inputOrder): Order,
     createStatusOrder(data: inputStatusOrder): StatusOrder,
     createStore(data: inputStore): Store,
-    createTransaction(data: inputTransaction): Transaction
+    createTransaction(data: inputTransaction): Transaction,
+    createBreadCrumb(data: inputBreadCrumb): BreadCrumb,
+    createItemBreadCrumb(data: inputItemBreadCrumb): ItemBreadCrumb
 
   }
   input inputUser {
@@ -125,12 +127,22 @@ const schema = buildSchema(`
   }
   input inputItem {
     user_id: Int,
+    brand: String,
+    model: String,
     description: String,
+    price: Float
+    image: String 
   }
   type Item {
     id: Int,
     user_id: Int,
-    description: String
+    brand: String,
+    model: String,
+    description: String,
+    price: Float,
+    image: String,
+    offers: [Offer],
+    user: User
   }
   input inputLpn{
     instance_item_id: Int, 
@@ -224,6 +236,28 @@ const schema = buildSchema(`
     timestamp_modified: String,
     timestamp_created: String
   }
+  input inputBreadCrumb {
+    breadcrumb_id: Int,
+    breadcrumb: String,
+    description: String,
+    path: String
+  }
+  type BreadCrumb {
+    id: Int,
+    breadcrumb_id: Int,
+    breadcrumb: String,
+    description: String,
+    path: String
+  }
+  input inputItemBreadCrumb {
+    item_id: Int,
+    breadcrumb_id: Int
+  }
+  type ItemBreadCrumb {
+    id: Int,
+    item_id: Int,
+    breadcrumb_id: Int,
+  }
 
 `)
 
@@ -231,7 +265,7 @@ const root = {
   hello: () => 'Hello world!',
   Users: () => {
     return new Promise((resolve, reject) => {
-      User.findAll({ include: Credential })
+      User.findAll({ include: [Credential, Card, Store, Item, Transaction, Order ] })
         .then((result) => {
           console.log(result)
           resolve(result)
@@ -240,58 +274,9 @@ const root = {
         })
     })
   },
-  hello: () => 'Hello world!',
-  Users: () => {
+  Items: () => {
     return new Promise((resolve, reject) => {
-      User.findAll({ include: Card })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  hello: () => 'Hello world!',
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Store })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  hello: () => 'Hello world!',
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Item })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  hello: () => 'Hello world!',
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Transaction })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  hello: () => 'Hello world!',
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Order })
+      Item.findAll({ include: [Offer, User] })
         .then((result) => {
           console.log(result)
           resolve(result)
@@ -423,6 +408,26 @@ const root = {
   createTransaction: (input) => {
     return new Promise((resolve, reject) => {
       Transaction.create(JSON.parse(JSON.stringify(input.data)))
+        .then((result) => {
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  createBreadCrumb: (input) => {
+    return new Promise((resolve, reject) => {
+      BreadCrumb.create(JSON.parse(JSON.stringify(input.data)))
+        .then((result) => {
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  createItemBreadCrumb: (input) => {
+    return new Promise((resolve, reject) => {
+      ItemBreadCrumb.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
