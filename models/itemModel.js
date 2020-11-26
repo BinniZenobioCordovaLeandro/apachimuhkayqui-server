@@ -8,7 +8,13 @@ function itemModel (sequelize, DataTypes) {
       brand: DataTypes.STRING,
       model: DataTypes.STRING,
       description: DataTypes.STRING,
-      precio: DataTypes.DECIMAL
+      price: DataTypes.DECIMAL,
+      image: {
+        type: DataTypes.BLOB,
+        get: function () {
+          return (this.getDataValue('image')).toString('utf8')
+        }
+      }
     },
     {
       timestamps: false,

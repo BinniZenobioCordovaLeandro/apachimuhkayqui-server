@@ -1,6 +1,7 @@
 var express = require('express')
 var { graphqlHTTP } = require('express-graphql')
 var { buildSchema } = require('graphql')
+var cors = require('cors')
 
 const { User, Credential, Card, Item } = require('./models/index')
 
@@ -66,7 +67,8 @@ var schema = buildSchema(`
     brand: String,
     model: String,
     description: String,
-    decimal: Float
+    price: Float,
+    image: String
   }
   type Item {
     id: Int,
@@ -74,7 +76,8 @@ var schema = buildSchema(`
     brand: String,
     model: String,
     description: String,
-    decimal: Float,
+    price: Float,
+    image: String,
     user: User
   }
 `)
@@ -131,6 +134,7 @@ var root = {
 }
 
 var app = express()
+app.use(cors())
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
