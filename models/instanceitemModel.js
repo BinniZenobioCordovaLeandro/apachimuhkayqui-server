@@ -5,11 +5,16 @@ function instanceItemModel (sequalize, DataTypes) {
     'instanceItem',
     {
       item_id: DataTypes.INTEGER,
-      talla: DataTypes.CHAR,
-      volumen: DataTypes.CHAR,
-      color: DataTypes.CHAR,
-      precio: DataTypes.INTEGER,
-      image: DataTypes.STRING,
+      talla: DataTypes.STRING,
+      volumen: DataTypes.STRING,
+      color: DataTypes.STRING,
+      price: DataTypes.DECIMAL,
+      image: {
+        type: DataTypes.BLOB,
+        get: function () {
+          return (this.getDataValue('image')).toString('utf8')
+        }
+      },
       description: DataTypes.STRING
     },
     {

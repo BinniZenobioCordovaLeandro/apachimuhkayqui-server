@@ -1,6 +1,7 @@
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
 const { buildSchema } = require('graphql')
+var cors=require('cors')
 
 const {
   User, Credential, Card, DetailOrder, Image, InstanceItem, Item,
@@ -108,20 +109,20 @@ const schema = buildSchema(`
     }
   input inputInstanceItem {
     item_id: Int,
-    talla: Int,
-    volumen: Int,
+    talla: String,
+    volumen: String,
     color: String,
-    precio: Int,
+    price: Float,
     image: String,
     description: String
   }
   type InstanceItem {
     id: Int,
     item_id: Int,
-    talla: Int,
-    volumen: Int,
+    talla: String,
+    volumen: String,
     color: String,
-    precio: Int,
+    price: Float,
     image: String,
     description: String
   }
@@ -199,22 +200,22 @@ const schema = buildSchema(`
   input inputStore {
     user_id: Int, 
     name: String,
-    address: Int,
-    location: Int,
-    latitude: Int,
-    longitude: Int,
-    reference: Int,
+    address: String,
+    location: String,
+    latitude: String,
+    longitude: String,
+    reference: String,
     document: String
   }
   type Store {
     id: Int,
     user_id: Int, 
     name: String,
-    address: Int,
-    location: Int,
-    latitude: Int,
-    longitude: Int,
-    reference: Int,
+    address: String,
+    location: String,
+    latitude: String,
+    longitude: String,
+    reference: String,
     document: String
   }
   input inputTransaction {
@@ -438,6 +439,7 @@ const root = {
 }
 
 const app = express()
+app.use(cors())
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,

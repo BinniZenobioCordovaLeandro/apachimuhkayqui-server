@@ -6,12 +6,12 @@ function storeModel (sequalize, DataTypes) {
     {
       user_id: DataTypes.INTEGER,
       name: DataTypes.STRING,
-      address: DataTypes.CHAR,
-      location: DataTypes.CHAR,
-      latitude: DataTypes.DATE,
-      longitude: DataTypes.DATE,
-      reference: DataTypes.CHAR,
-      document: DataTypes.BLOB
+      address: DataTypes.STRING,
+      location: DataTypes.STRING,
+      latitude: DataTypes.STRING,
+      longitude: DataTypes.STRING,
+      reference: DataTypes.STRING,
+      document: DataTypes.STRING
     },
     {
       freezeTableName: false,
