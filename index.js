@@ -4,8 +4,8 @@ const { buildSchema } = require('graphql')
 var cors=require('cors')
 
 const {
-  User, Credential, Card, DetailOrder, Image, InstanceItem, Item,
-  Lpn, Offer, Order, StatusOrder, Store, Transaction, BreadCrumb, ItemBreadCrumb
+  User, Credential, Card, Detail_Order, Image, InstanceItem, Item,
+  Lpn, Offer, Order, StatusOrder, Store, Transaction, BreadCrumb, Item_BreadCrumb
 } = require('./models/index')
 
 const schema = buildSchema(`
@@ -24,7 +24,7 @@ const schema = buildSchema(`
     createUser(data: inputUser): User,
     createCredential(data: inputCredential): Credential,
     createCard(data: inputCard): Card,
-    createDetaiOrder(data: inputDetailOrder): DetailOrder,
+    createDetail_Order(data: inputDetail_Order): Detail_Order,
     createImage(data: inputImage): Image,
     createInstanceItem(data: inputInstanceItem): InstanceItem,
     createItem(data: inputItem): Item,
@@ -35,7 +35,7 @@ const schema = buildSchema(`
     createStore(data: inputStore): Store,
     createTransaction(data: inputTransaction): Transaction,
     createBreadCrumb(data: inputBreadCrumb): BreadCrumb,
-    createItemBreadCrumb(data: inputItemBreadCrumb): ItemBreadCrumb
+    createItem_BreadCrumb(data: inputItem_BreadCrumb): Item_BreadCrumb
 
   }
   input inputUser {
@@ -85,13 +85,13 @@ const schema = buildSchema(`
     timestamp_modified: String,
     timestamp_created: String
   }
-  input inputDetailOrder {
+  input inputDetail_Order {
   order_id: Int,
   lpn_id: Int,
   timestamp_modified: String,
   timestamp_created: String
   }
-  type DetailOrder {
+  type Detail_Order {
     id: Int,
     order_id: Int,
     lpn_id: Int,
@@ -250,11 +250,11 @@ const schema = buildSchema(`
     description: String,
     path: String
   }
-  input inputItemBreadCrumb {
+  input inputItem_BreadCrumb {
     item_id: Int,
     breadcrumb_id: Int
   }
-  type ItemBreadCrumb {
+  type Item_BreadCrumb {
     id: Int,
     item_id: Int,
     breadcrumb_id: Int,
@@ -316,9 +316,9 @@ const root = {
         })
     })
   },
-  createDetailOrder: (input) => {
+  createDetail_Order: (input) => {
     return new Promise((resolve, reject) => {
-      DetailOrder.create(JSON.parse(JSON.stringify(input.data)))
+      Detail_Order.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
@@ -426,9 +426,9 @@ const root = {
         })
     })
   },
-  createItemBreadCrumb: (input) => {
+  createItem_BreadCrumb: (input) => {
     return new Promise((resolve, reject) => {
-      ItemBreadCrumb.create(JSON.parse(JSON.stringify(input.data)))
+      Item_BreadCrumb.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {

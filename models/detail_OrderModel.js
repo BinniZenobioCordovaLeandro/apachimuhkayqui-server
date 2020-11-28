@@ -1,8 +1,8 @@
 'use strict'
 
-function detailOrder (sequalize, DataTypes) {
-  const detailOrder = sequalize.define(
-    'detailOrder',
+function detail_Order (sequalize, DataTypes) {
+  const detail_Order = sequalize.define(
+    'detail_Order',
     {
       order_id: DataTypes.INTEGER,
       lpn_id: DataTypes.INTEGER,
@@ -14,6 +14,6 @@ function detailOrder (sequalize, DataTypes) {
       timestamps: false
     }
   )
-  return detailOrder
+  return detail_Order
 }
-module.exports = detailOrder
+module.exports = detail_Order
