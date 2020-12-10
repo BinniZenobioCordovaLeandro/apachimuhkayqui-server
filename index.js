@@ -1,7 +1,8 @@
-var express = require('express')
-var { graphqlHTTP } = require('express-graphql')
-var { buildSchema } = require('graphql')
-var cors = require('cors')
+const express = require('express')
+const { graphqlHTTP } = require('express-graphql')
+const { buildSchema } = require('graphql')
+const Op = require('sequelize').Op
+const cors = require('cors')
 
 const { User, Credential, Card, Item } = require('./models/index')
 
@@ -10,7 +11,7 @@ var schema = buildSchema(`
     Users: [User],
     Credentials: [Credential],
     Cards: [Card],
-    Items: [Item]
+    Items(brand: String): [Item]
   }
   type Mutation{
     createUser(data: inputUser): User,
@@ -101,9 +102,16 @@ var root = {
         .then((result) => resolve(result))
         .catch((err) => reject(err))
     ),
-  Items: () =>
+  Items: (obj, args, context, info) =>
     new Promise((resolve, reject) =>
-      Item.findAll({ include: [User] })
+      Item.findAll({
+        include: [User],
+        where: {
+          brand: {
+            [Op.like]: `%${obj.brand}%`
+          }
+        }
+      })
         .then((result) => resolve(result))
         .catch((err) => reject(err))
     ),
