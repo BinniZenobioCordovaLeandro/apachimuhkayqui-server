@@ -1,7 +1,7 @@
 'use strict'
 
-function detail_Order (sequalize, DataTypes) {
-  const detail_Order = sequalize.define(
+function detail_OrderModel (sequalize, DataTypes) {
+  const detail_OrderModel = sequalize.define(
     'detail_Order',
     {
       order_id: DataTypes.INTEGER,
@@ -14,6 +14,14 @@ function detail_Order (sequalize, DataTypes) {
       timestamps: false
     }
   )
-  return detail_Order
+  detail_OrderModel.associate=(models)=>{
+    detail_OrderModel.belongsTo(models.Lpn, {
+      foreignKey: 'lpn_id'
+    })
+    detail_OrderModel.belongsTo(models.Order, {
+      foreignKey: 'order_id'
+    })
+  }
+  return detail_OrderModel
 }
-module.exports = detail_Order
+module.exports = detail_OrderModel

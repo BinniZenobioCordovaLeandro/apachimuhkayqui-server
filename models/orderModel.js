@@ -19,6 +19,9 @@ function orderModel (sequalize, DataTypes) {
     orderModel.belongsTo(models.User, {
       foreignKey: 'user_id'
     })
+    orderModel.hasMany(models.Detail_Order, {
+      foreignKey: 'order_id'
+    })
   }
   return orderModel
 }

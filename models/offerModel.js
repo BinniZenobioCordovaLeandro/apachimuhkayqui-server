@@ -14,6 +14,11 @@ function offerModel (sequalize, DataTypes) {
       timestamps: false
     }
   )
+  offerModel.asociate=(models)=>{
+    offerModel.belongsTo(models.Item, {
+      foreignKey: 'item_id'
+    })
+  }
   return offerModel
 }
 module.exports = offerModel

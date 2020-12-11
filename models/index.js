@@ -42,7 +42,13 @@ User.associate({
   Order: Order
 })
 Credential.associate({ User: User })
-Item.associate({ Offer:Offer, User:User,})
+Item.associate({ Offer:Offer, User:User, InstanceItem:InstanceItem})
+InstanceItem.associate({Image:Image, Item:Item, Lpn:Lpn})
+Image.associate({InstanceItem:InstanceItem})
+Lpn.associate({InstanceItem:InstanceItem, Detail_Order:Detail_Order})
+Detail_Order.associate({Lpn:Lpn, Order:Order})
+Order.associate({Detail_Order:Detail_Order, User:User})
+
 
 module.exports = {
   User,

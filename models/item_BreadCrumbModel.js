@@ -12,6 +12,7 @@ function item_BreadCrumbModel (sequalize, DataTypes) {
       timestamps: false
     }
   )
+  
   return item_BreadCrumbModel
 }
 module.exports = item_BreadCrumbModel

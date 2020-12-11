@@ -28,6 +28,9 @@ function itemModel (sequalize, DataTypes) {
     itemModel.hasMany(models.Offer, {
       foreignKey: 'item_id'
     })
+    itemModel.hasMany(models.InstanceItem,{
+      foreignKey: 'item_id'
+    })
   }
   return itemModel
 }

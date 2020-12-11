@@ -1,7 +1,8 @@
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
 const { buildSchema } = require('graphql')
-var cors=require('cors')
+const Op = require('sequelize').Op
+const cors=require('cors')
 
 const {
   User, Credential, Card, Detail_Order, Image, InstanceItem, Item,
@@ -15,9 +16,13 @@ const schema = buildSchema(`
     Credentials: Credential,
     Cards: [Card],
     Stores: [Store],
-    Items: [Item],
+    Items(brand: String): [Item],
     Transactions: [Transaction],
-    Orders: [Order]
+    Orders: [Order],
+    InstanceItems: [InstanceItem],
+    Images: [Image],
+    Lpns: [Lpn],
+    Detail_Orders: [Detail_Order]
 
   }
   type Mutation{
@@ -124,7 +129,9 @@ const schema = buildSchema(`
     color: String,
     price: Float,
     image: String,
-    description: String
+    description: String,
+    images : [Image],
+    lpns: [Lpn]
   }
   input inputItem {
     user_id: Int,
@@ -143,6 +150,7 @@ const schema = buildSchema(`
     price: Float,
     image: String,
     offers: [Offer],
+    instanceItems: [InstanceItem],
     user: User
   }
   input inputLpn{
@@ -152,7 +160,8 @@ const schema = buildSchema(`
   type Lpn {
     id: Int,
     instance_item_id: Int, 
-    lpn: Int
+    lpn: Int,
+    detail_Orders:[Detail_Order]
   }
   input inputOffer{
     item_id: Int, 
@@ -180,7 +189,8 @@ const schema = buildSchema(`
     description: Int,
     items: Int,
     timestamp_modified: String,
-    timestamp_created: String
+    timestamp_created: String,
+    detail_Orders: [Detail_Order]
   }
   input inputStatusOrder{
     order_id: Int,
@@ -261,7 +271,7 @@ const schema = buildSchema(`
   }
 
 `)
-
+//son consolas..........................
 const root = {
   hello: () => 'Hello world!',
   Users: () => {
@@ -275,9 +285,25 @@ const root = {
         })
     })
   },
-  Items: () => {
+  Items: (obj, args,context,info) =>
+  new Promise((resolve, reject) => {
+      Item.findAll({ include: [Offer, User, InstanceItem],
+      where:{
+        brand:{
+          [Op.like]: `%${obj.brand}%`
+        }
+      } 
+      })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    }),
+  instanceItems: () => {
     return new Promise((resolve, reject) => {
-      Item.findAll({ include: [Offer, User] })
+      InstanceItem.findAll({ include: [Image, Lpn] })
         .then((result) => {
           console.log(result)
           resolve(result)
@@ -286,6 +312,30 @@ const root = {
         })
     })
   },
+  lpns: () => {
+    return new Promise((resolve, reject) => {
+      Lpn.findAll({ include: [Detail_Order] })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  orders: () => {
+    return new Promise((resolve, reject) => {
+      Order.findAll({ include: [Detail_Order] })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  //....estos son resolveres................
+  //.....................................
   createUser: (input) => {
     return new Promise((resolve, reject) => {
       User.create(JSON.parse(JSON.stringify(input.data)))

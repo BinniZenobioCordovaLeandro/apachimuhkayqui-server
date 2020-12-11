@@ -12,6 +12,14 @@ function lpnModel (sequalize, DataTypes) {
       timestamps: false
     }
   )
+  lpnModel.associate=(models)=>{
+    lpnModel.belongsTo(models.InstanceItem, {
+      foreignKey: 'instance_item_id'
+    })
+    lpnModel.hasMany(models.Detail_Order, {
+      foreignKey: 'lpn_id'
+    })
+  }
   return lpnModel
 }
 module.exports = lpnModel

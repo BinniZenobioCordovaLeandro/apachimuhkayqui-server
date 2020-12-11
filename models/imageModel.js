@@ -12,6 +12,11 @@ function imageModel (sequalize, DataType) {
       timestamps: false
     }
   )
+  imageModel.associate=(models)=>{
+    imageModel.belongsTo(models.InstanceItem, {
+      foreignKey: 'instance_item_id'
+    })
+  }
   return imageModel
 }
 module.exports = imageModel
