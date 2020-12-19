@@ -8,7 +8,7 @@ const { User, Credential, Card, Item } = require('./models/index')
 
 var schema = buildSchema(`
   type Query {
-    Users: [User],
+    Users(data: inputUser): [User],
     Credentials: [Credential],
     Cards: [Card],
     Items(brand: String): [Item]
@@ -20,6 +20,7 @@ var schema = buildSchema(`
     createItem(data: inputItem): Item
   }
   input inputUser {
+    id: Int,
     fullname: String,
     alias: String,
     email: String,
@@ -84,9 +85,16 @@ var schema = buildSchema(`
 `)
 
 var root = {
-  Users: () =>
+  Users: (obj, args, context, info) =>
     new Promise((resolve, reject) =>
-      User.findAll({ include: [Credential, Card] })
+      User.findAll({
+        include: [Credential, Card],
+        where: {
+          email: {
+            [Op.eq]: obj.data.email
+          }
+        }
+      })
         .then((result) => resolve(result))
         .catch((err) => reject(err))
     ),
