@@ -24,6 +24,7 @@ var schema = buildSchema(`
     fullname: String,
     alias: String,
     email: String,
+    password: String,
     phone: Int,
     document: Int
   }
@@ -92,6 +93,9 @@ var root = {
         where: {
           email: {
             [Op.eq]: obj.data.email
+          },
+          password: {
+            [Op.eq]: obj.data.password
           }
         }
       })
