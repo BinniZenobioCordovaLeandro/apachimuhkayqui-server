@@ -7,6 +7,7 @@ function userModel (sequelize, DataTypes) {
       fullname: DataTypes.STRING,
       alias: DataTypes.STRING,
       email: DataTypes.STRING,
+      password: DataTypes.BLOB,
       phone: DataTypes.CHAR,
       document: DataTypes.CHAR
     },
