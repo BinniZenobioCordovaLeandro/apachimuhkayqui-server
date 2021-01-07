@@ -272,19 +272,23 @@ const schema = buildSchema(`
 
 `)
 //son consolas..........................
-const root = {
-  hello: () => 'Hello world!',
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: [Credential, Card, Store, Item, Transaction, Order ] })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
+var root = {
+  Users: (obj, args, context, info) =>
+    new Promise((resolve, reject) =>
+      User.findAll({
+        include: [Credential, Card, Store, Item, Transaction, Order ],
+        where: {
+          email: {
+            [Op.eq]: obj.data.email
+          },
+          password: {
+            [Op.eq]: obj.data.password
+          }
+        }
+      })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
   Items: (obj, args,context,info) =>
   new Promise((resolve, reject) => {
       Item.findAll({ include: [Offer, User, InstanceItem],
