@@ -1,14 +1,14 @@
 'use strict'
 
-function cardModel (sequelize, Datatypes) {
+function cardModel (sequelize, DataTypes) {
   const cardModel = sequelize.define(
     'card',
     {
-      user_id: Datatypes.INTEGER,
-      number: Datatypes.INTEGER,
-      expiration: Datatypes.STRING,
-      timestamp_modified: Datatypes.DATE,
-      timestamp_created: Datatypes.DATE
+      user_id: DataTypes.INTEGER,
+      number: DataTypes.INTEGER,
+      expiration: DataTypes.STRING,
+      timestamp_modified: DataTypes.DATE,
+      timestamp_created: DataTypes.DATE
     },
     {
       timestamps: false,

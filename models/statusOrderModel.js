@@ -1,14 +1,14 @@
 'use strict'
 
-function statusOrderModel (sequelize, Datatypes) {
+function statusOrderModel (sequelize, DataTypes) {
   const statusOrderModel = sequelize.define(
-    'statusOrder',
+    'status_order',
     {
-      order_id: Datatypes.INTEGER,
-      description: Datatypes.INTEGER,
-      status: Datatypes.INTEGER,
-      timestamp_modified: Datatypes.DATE,
-      timestamp_created: Datatypes.DATE
+      order_id: DataTypes.INTEGER,
+      description: DataTypes.INTEGER,
+      status: DataTypes.INTEGER,
+      timestamp_modified: DataTypes.DATE,
+      timestamp_created: DataTypes.DATE
     },
     {
       timestamps: false,

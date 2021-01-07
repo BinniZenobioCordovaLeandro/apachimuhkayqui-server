@@ -1,17 +1,17 @@
 'use strict'
 
-function credentialModel (sequelize, Datatypes) {
+function credentialModel (sequelize, DataTypes) {
   const credentialModel = sequelize.define(
     'credential',
     {
-      user_id: Datatypes.INTEGER,
+      user_id: DataTypes.INTEGER,
       password: {
-        type: Datatypes.STRING,
+        type: DataTypes.STRING,
         get: function () {
           return (this.getDataValue('password')).toString('utf8')
         }
       },
-      timestamp_created: Datatypes.DATE
+      timestamp_created: DataTypes.DATE
     },
     {
       timestamps: false,

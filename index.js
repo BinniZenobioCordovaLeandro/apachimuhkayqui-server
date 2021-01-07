@@ -1,20 +1,22 @@
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
 const { buildSchema } = require('graphql')
+const Op = require('sequelize').Op
+const cors = require('cors')
 
 const { User, Credential, Card, DetailOrder, Image, InstanceItem, Item, Lpn, Offer, Order, StatusOrder, Store, Transaction } = require('./models/index')
 
 const schema = buildSchema(`
 type Query {
   hello: String,
-  Users: [User],
+  Users(data: inputUser): [User],
   Credentials: [Credential],
   Cards: [Card],
   Stores: [Store],
   Orders: [Order],
   Status_orders: [StatusOrder],
   Transactions: [Transaction],
-  Items: [Item],
+  Items(brand: String): [Item],
   Offers: [Offer],
   Instance_items: [InstanceItem],
   Images: [Image],
@@ -37,6 +39,7 @@ type Query {
     createTransaction(data: inputTransaction): Transaction
   }
   input inputUser {
+    id: Int,
     fullname: String,
     alias: String,
     email: String,
@@ -50,11 +53,11 @@ type Query {
     email: String,
     phone: Int,
     document: Int
-    credentials: [Credential]
-    cards: [Card] 
-    stores: [Store]
-    orders: [Order]
-    transaction: [Transaction]
+    credentials: [Credential],
+    cards: [Card],
+    stores: [Store],
+    orders: [Order],
+    transaction: [Transaction],
     item: [Item]
   }
   input inputCredential {
@@ -130,14 +133,25 @@ type Query {
   }
   input inputItem {
     user_id: Int,
-    description: String
+    brand: String,
+    model: String,
+    description: String,
+    price: Float,
+    original_price: Float,
+    image: String
   }
   type Item {
     id: Int,
     user_id: Int,
-    description: String
+    brand: String,
+    model: String,
+    description: String,
+    price: Float,
+    original_price: Float,
+    image: String,
     offers: [Offer]
     instance_items: [InstanceItem]
+    user: User
   }
   input inputLpn {
     instance_item_id: Int,
@@ -239,195 +253,181 @@ type Query {
 
 const root = {
   hello: () => 'Hello world', /* user-start */
-  Users: () => {
-    return new Promise((resolve, reject) => {
-      User.findAll({ include: Credential })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Orders: () => {
-    return new Promise((resolve, reject) => {
-      Order.findAll({ include: Transaction })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Items: () => {
-    return new Promise((resolve, reject) => {
-      Item.findAll({ include: Offer })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  InstanceItems: () => {
-    return new Promise((resolve, reject) => {
-      InstanceItem.findAll({ include: Image })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Lpns: () => {
-    return new Promise((resolve, reject) => {
-      Lpn.findAll({ include: DetailOrder })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
+  Users: (obj, args, context, info) =>
+    new Promise((resolve, reject) =>
+      User.findAll({
+        include: [Credential, Card, Store, Order, Transaction, Item],
+        where: {
+          email: {
+            [Op.eq]: obj.data.email
+          }
+        }
+      })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Credentials: () =>
+    new Promise((resolve, reject) =>
+      Credential.findAll({ include: [User] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Orders: () =>
+    new Promise((resolve, reject) =>
+      Order.findAll({ include: [Transaction, DetailOrder, StatusOrder] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Items: (obj, args, context, info) =>
+    new Promise((resolve, reject) =>
+      Item.findAll({
+        include: [Offer, InstanceItem, User],
+        where: {
+          brand: {
+            [Op.like]: `%${obj.brand}%`
+          }
+        }
+      })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Instance_items: () =>
+    new Promise((resolve, reject) =>
+      InstanceItem.findAll({ include: [Image, Lpn, Item] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Lpns: () =>
+    new Promise((resolve, reject) =>
+      Lpn.findAll({ include: [DetailOrder, InstanceItem] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Cards: () =>
+    new Promise((resolve, reject) =>
+      Card.findAll({ include: [User] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Detail_orders: () =>
+    new Promise((resolve, reject) =>
+      DetailOrder.findAll({ include: [Lpn, Order] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Images: () =>
+    new Promise((resolve, reject) =>
+      Image.findAll({ include: [InstanceItem] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Offers: () =>
+    new Promise((resolve, reject) =>
+      Card.findAll({ include: [Item] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Status_orders: () =>
+    new Promise((resolve, reject) =>
+      StatusOrder.findAll({ include: [Order] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Stores: () =>
+    new Promise((resolve, reject) =>
+      Store.findAll({ include: [User] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  Transactions: () =>
+    new Promise((resolve, reject) =>
+      Transaction.findAll({ include: [User] })
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
   /* ------lpn-end------ */
   /* ------lpn-end------ */
-  createUser: (input) => {
-    return new Promise((resolve, reject) => {
+  createUser: (input) =>
+    new Promise((resolve, reject) =>
       User.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createCredential: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createCredential: (input) =>
+    new Promise((resolve, reject) =>
       Credential.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createDetailOrder: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createDetailOrder: (input) =>
+    new Promise((resolve, reject) =>
       DetailOrder.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createImage: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createImage: (input) =>
+    new Promise((resolve, reject) =>
       Image.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createItem: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createItem: (input) =>
+    new Promise((resolve, reject) =>
       Item.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createInstanceItem: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createInstanceItem: (input) =>
+    new Promise((resolve, reject) =>
       InstanceItem.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createCard: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createCard: (input) =>
+    new Promise((resolve, reject) =>
       Card.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createOffer: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createOffer: (input) =>
+    new Promise((resolve, reject) =>
       Offer.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createLpn: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createLpn: (input) =>
+    new Promise((resolve, reject) =>
       Lpn.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createOrder: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createOrder: (input) =>
+    new Promise((resolve, reject) =>
       Order.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createStatusOrder: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createStatusOrder: (input) =>
+    new Promise((resolve, reject) =>
       StatusOrder.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createStore: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createStore: (input) =>
+    new Promise((resolve, reject) =>
       Store.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createTransaction: (input) => {
-    return new Promise((resolve, reject) => {
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    ),
+  createTransaction: (input) =>
+    new Promise((resolve, reject) =>
       Transaction.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  }
+        .then((result) => resolve(result))
+        .catch((err) => reject(err))
+    )
 }
 const app = express()
+app.use(cors())
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,

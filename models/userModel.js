@@ -1,14 +1,14 @@
 'use strict'
 
-function userModel (sequelize, Datatypes) {
+function userModel (sequelize, DataTypes) {
   const userModel = sequelize.define(
     'user',
     {
-      fullname: Datatypes.STRING,
-      alias: Datatypes.STRING,
-      email: Datatypes.STRING,
-      phone: Datatypes.CHAR,
-      document: Datatypes.CHAR
+      fullname: DataTypes.STRING,
+      alias: DataTypes.STRING,
+      email: DataTypes.STRING,
+      phone: DataTypes.CHAR,
+      document: DataTypes.CHAR
     },
     {
       timestamps: false,

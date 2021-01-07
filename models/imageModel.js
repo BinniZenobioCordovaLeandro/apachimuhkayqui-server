@@ -1,11 +1,11 @@
 'use strict'
 
-function imageModel (sequelize, Datatypes) {
+function imageModel (sequelize, DataTypes) {
   const imageModel = sequelize.define(
     'image',
     {
-      instance_item_id: Datatypes.INTEGER,
-      url: Datatypes.BLOB
+      instance_item_id: DataTypes.INTEGER,
+      url: DataTypes.BLOB
     },
     {
       timestamps: false,

@@ -1,13 +1,13 @@
 'use strict'
 
-function offerModel (sequelize, Datatypes) {
+function offerModel (sequelize, DataTypes) {
   const offerModel = sequelize.define(
     'offer',
     {
-      item_id: Datatypes.INTEGER,
-      timestamp_since: Datatypes.DATE,
-      timestamp_until: Datatypes.DATE,
-      percentage: Datatypes.INTEGER
+      item_id: DataTypes.INTEGER,
+      timestamp_since: DataTypes.DATE,
+      timestamp_until: DataTypes.DATE,
+      percentage: DataTypes.INTEGER
     },
     {
       timestamps: false,

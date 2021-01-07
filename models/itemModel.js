@@ -1,11 +1,21 @@
 'use strict'
 
-function itemModel (sequelize, Datatypes) {
+function itemModel (sequelize, DataTypes) {
   const itemModel = sequelize.define(
     'item',
     {
-      user_id: Datatypes.INTEGER,
-      description: Datatypes.STRING
+      user_id: DataTypes.INTEGER,
+      brand: DataTypes.STRING,
+      model: DataTypes.STRING,
+      description: DataTypes.STRING,
+      price: DataTypes.DECIMAL,
+      original_price: DataTypes.DECIMAL,
+      image: {
+        type: DataTypes.BLOB,
+        get: function () {
+          return (this.getDataValue('image')).toString('utf8')
+        }
+      }
     },
     {
       timestamps: false,
