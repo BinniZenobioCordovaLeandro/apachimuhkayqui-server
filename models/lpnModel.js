@@ -1,10 +1,10 @@
 'user strict'
 
-function lpnModel (sequelize, Datatypes) {
+function lpnModel (sequelize, DataTypes) {
   const lpnModel = sequelize.define(
     'lpn', {
-      instance_item_id: Datatypes.INTEGER,
-      lpn: Datatypes.INTEGER
+      instance_item_id: DataTypes.INTEGER,
+      lpn: DataTypes.INTEGER
     }, {
       timestamps: false,
       freezeTableName: false

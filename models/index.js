@@ -37,29 +37,16 @@ User.associate({
   Order: Order,
   Transaction: Transaction
 })
-Credential.associate({ User: User })
-Card.associate({ User: User })
-Store.associate({ User: User })
 Order.associate({
   User: User,
   StatusOrder: StatusOrder,
   Transaction: Transaction,
   DetailOrder: DetailOrder
 })
-Transaction.associate({
-  Order: Order,
-  User: User
-})
 Item.associate({
   User: User,
   InstanceItem: InstanceItem,
   Offer: Offer
-})
-Offer.associate({ Item: Item })
-InstanceItem.associate({
-  Item: Item,
-  Image: Image,
-  Lpn: Lpn
 })
 Image.associate({ InstanceItem: InstanceItem })
 Lpn.associate({
@@ -69,6 +56,19 @@ Lpn.associate({
 DetailOrder.associate({
   Lpn: Lpn,
   Order: Order
+})
+Credential.associate({ User: User })
+Card.associate({ User: User })
+Store.associate({ User: User })
+Transaction.associate({
+  Order: Order,
+  User: User
+})
+Offer.associate({ Item: Item })
+InstanceItem.associate({
+  Item: Item,
+  Image: Image,
+  Lpn: Lpn
 })
 StatusOrder.associate({ Order: Order })
 

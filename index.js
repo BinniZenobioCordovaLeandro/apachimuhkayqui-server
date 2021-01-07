@@ -1,27 +1,26 @@
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
 const { buildSchema } = require('graphql')
-
+const Op = require('sequelize').Op
+const cors = require('cors')
 const { User, Credential, Card, DetailOrder, Image, InstanceItem, Item, Lpn, Offer, Order, StatusOrder, Store, Transaction } = require('./models/index')
-const userModel = require('./models/userModel')
 
 const schema = buildSchema(`
 type Query {
   hello: String,
-  Users: [User],
+  Users(data: inputUser): [User],
   Credentials: [Credential],
   Cards: [Card],
-  Items: [Item],
   Stores: [Store],
   Orders: [Order],
-  InstanceItems: [InstanceItem],
-  Offers: [Offer],
-  Images: [Image],
-  Lpns: [Lpn],
   Status_orders: [StatusOrder],
   Transactions: [Transaction],
+  Items(brand: String): [Item],
+  Offers: [Offer],
+  Instance_items: [InstanceItem],
+  Images: [Image],
+  Lpns: [Lpn],
   Detail_orders: [DetailOrder]
-
 }
   type Mutation{
     createUser(data: inputUser): User,
@@ -39,6 +38,7 @@ type Query {
     createTransaction(data: inputTransaction): Transaction
   }
   input inputUser {
+    id: Int,
     fullname: String,
     alias: String,
     email: String,
@@ -51,12 +51,13 @@ type Query {
     alias: String,
     email: String,
     phone: Int,
-    document: Int,
-    credentials: [Credential],
-    cards: [Card],
-    items: [Item],
-    orders: [Order],
+    document: Int
+    credentials: [Credential]
+    cards: [Card] 
+    stores: [Store]
+    orders: [Order]
     transactions: [Transaction]
+    items: [Item]
   }
   input inputCredential {
     user_id: Int,
@@ -87,15 +88,38 @@ type Query {
   input inputDetailOrder {
     order_id: Int
     lpn_id: Int,
+    items: Int,
     timestamp_modified: String,
     timestamp_created: String
   }
   type DetailOrder {
     id: Int,
-    order_id: Int
+    order_id: Int,
     lpn_id: Int,
+    items: Int,
     timestamp_modified: String,
     timestamp_created: String
+  }
+  input inputInstanceItem {
+    item_id: Int,
+    talla: String,
+    volumen: String,
+    color: String,
+    precio: String,
+    image: String,
+    description: String
+  }
+  type InstanceItem {
+    id: Int,
+    item_id: Int,
+    talla: String,
+    volumen: String,
+    color: String,
+    precio: String,
+    image: String,
+    description: String
+    images: [Image]
+    lpns: [Lpn]
   }
   input inputImage {
     instance_item_id: Int
@@ -106,38 +130,27 @@ type Query {
     instance_item_id: Int 
     url: String
   }
-  input inputInstanceItem {
-    item_id: Int,
-    talla: Int,
-    volumen: Int,
-    color: String,
-    precio: String,
-    image: String,
-    description: String
-  }
-  type InstanceItem {
-    id: Int,
-    item_id: Int,
-    talla: Int,
-    volumen: Int,
-    color: String,
-    precio: String,
-    image: String,
-    description: String
-    images: [Image],
-    lpns: [Lpn]
-
-  }
   input inputItem {
     user_id: Int,
-    description: String
+    brand: String,
+    model: String,
+    description: String,
+    original_price: Float,
+    price: Float,
+    image: String
   }
   type Item {
     id: Int,
     user_id: Int,
+    brand: String,
+    model: String,
     description: String,
-    instanceItems: [InstanceItem],
+    original_price: Float,
+    price: Float,
+    image: String,
     offers: [Offer]
+    instance_items: [InstanceItem]
+    user: User
   }
   input inputLpn {
     instance_item_id: Int,
@@ -146,21 +159,21 @@ type Query {
   type Lpn{
     id: Int,
     instance_item_id: Int,
-    lpn: Int,
-    detailOrders: [DetailOrder]
+    lpn: Int
+    detail_orders: [DetailOrder]
   }
   input inputOffer {
     item_id: Int,
     timestamp_since: String,
     timestamp_until: String,
-    porcentaje: Int
+    percentage: Int
   }
   type Offer {
     id: Int,
     item_id: Int,
     timestamp_since: String,
     timestamp_until: String,
-    porcentaje: Int
+    percentage: Int
   }
   input inputOrder {
     user_id: Int,
@@ -175,10 +188,10 @@ type Query {
     description: Int,
     items: Int,
     timestamp_modified: String,
-    timestamp_created: String,
-    statusOrders: [StatusOrder],
-    transactions: [Transaction],
-    detailOrders: [DetailOrder]
+    timestamp_created: String
+    transactions: [Transaction]
+    status_orders: [StatusOrder]
+    detail_orders: [DetailOrder]
   }
   input inputStatusOrder {
     order_id: Int,
@@ -211,7 +224,7 @@ type Query {
     name: String,
     address: String,
     location: String,
-    latitude: String
+    latitude: String,
     longitude: String,
     reference: String,
     document: String
@@ -238,32 +251,16 @@ type Query {
 `)
 
 const root = {
-  hello: () => 'Hello world',
-  Users: () => {
+  Users: (obj, args, context, info) => {
     return new Promise((resolve, reject) => {
-      User.findAll({ include: Credential })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  Items: () => {
-    return new Promise((resolve, reject) => {
-      Item.findAll({ include: InstanceItem })
-        .then((result) => {
-          console.log(result)
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  InstanceItems: () => {
-    return new Promise((resolve, reject) => {
-      InstanceItem.findAll({ include: Image })
+      User.findAll({
+        include: [Credential, Card, Store, Order, Transaction, Item],
+        where: {
+          email: {
+            [Op.eq]: obj.data.email
+          }
+        }
+      })
         .then((result) => {
           console.log(result)
           resolve(result)
@@ -274,7 +271,36 @@ const root = {
   },
   Orders: () => {
     return new Promise((resolve, reject) => {
-      Order.findAll({ include: StatusOrder })
+      Order.findAll({ include: [Transaction, DetailOrder, StatusOrder] })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  Items: (obj, args, context, info) => {
+    return new Promise((resolve, reject) => {
+      Item.findAll({
+        include: [Offer, InstanceItem, User],
+        where: {
+          brand: {
+            [Op.like]: `%${obj.brand}%`
+          }
+        }
+      })
+        .then((result) => {
+          console.log(result)
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  InstanceItems: () => {
+    return new Promise((resolve, reject) => {
+      InstanceItem.findAll({ include: [Image, Lpn] })
         .then((result) => {
           console.log(result)
           resolve(result)
@@ -314,7 +340,7 @@ const root = {
         })
     })
   },
-  createDetail_order: (input) => {
+  createDetailOrder: (input) => {
     return new Promise((resolve, reject) => {
       DetailOrder.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
@@ -334,26 +360,6 @@ const root = {
         })
     })
   },
-  createInstanceItem: (input) => {
-    return new Promise((resolve, reject) => {
-      InstanceItem.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
-  createOffer: (input) => {
-    return new Promise((resolve, reject) => {
-      Offer.create(JSON.parse(JSON.stringify(input.data)))
-        .then((result) => {
-          resolve(result)
-        }).catch((err) => {
-          reject(err)
-        })
-    })
-  },
   createItem: (input) => {
     return new Promise((resolve, reject) => {
       Item.create(JSON.parse(JSON.stringify(input.data)))
@@ -364,9 +370,29 @@ const root = {
         })
     })
   },
+  createInstanceItem: (input) => {
+    return new Promise((resolve, reject) => {
+      InstanceItem.create(JSON.parse(JSON.stringify(input.data)))
+        .then((result) => {
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
   createCard: (input) => {
     return new Promise((resolve, reject) => {
       Card.create(JSON.parse(JSON.stringify(input.data)))
+        .then((result) => {
+          resolve(result)
+        }).catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  createOffer: (input) => {
+    return new Promise((resolve, reject) => {
+      Offer.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
           resolve(result)
         }).catch((err) => {
@@ -394,7 +420,7 @@ const root = {
         })
     })
   },
-  createStatus_order: (input) => {
+  createStatusOrder: (input) => {
     return new Promise((resolve, reject) => {
       StatusOrder.create(JSON.parse(JSON.stringify(input.data)))
         .then((result) => {
@@ -426,6 +452,7 @@ const root = {
   }
 }
 const app = express()
+app.use(cors())
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,

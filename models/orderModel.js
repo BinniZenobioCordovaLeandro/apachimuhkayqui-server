@@ -1,13 +1,13 @@
 'use strict'
 
-function orderModel (sequelize, Datatypes) {
+function orderModel (sequelize, DataTypes) {
   const orderModel = sequelize.define(
     'order', {
-      user_id: Datatypes.INTEGER,
-      description: Datatypes.INTEGER,
-      items: Datatypes.INTEGER,
-      timestamp_modified: Datatypes.DATE,
-      timestamp_created: Datatypes.DATE
+      user_id: DataTypes.INTEGER,
+      description: DataTypes.INTEGER,
+      items: DataTypes.INTEGER,
+      timestamp_modified: DataTypes.DATE,
+      timestamp_created: DataTypes.DATE
     }, {
       timestamps: false,
       freezeTableName: false

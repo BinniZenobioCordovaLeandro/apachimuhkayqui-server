@@ -1,12 +1,12 @@
 'use strict'
 
-function detailOrderModel (sequelize, Datatypes) {
+function detailOrderModel (sequelize, DataTypes) {
   const detailOrderModel = sequelize.define(
     'detailOrder', {
-      order_id: Datatypes.INTEGER,
-      lpn_id: Datatypes.INTEGER,
-      timestamp_modified: Datatypes.DATE,
-      timestamp_created: Datatypes.DATE
+      order_id: DataTypes.INTEGER,
+      lpn_id: DataTypes.INTEGER,
+      timestamp_modified: DataTypes.DATE,
+      timestamp_created: DataTypes.DATE
     }, {
       timestamps: false,
       freezeTableName: false

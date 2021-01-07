@@ -1,15 +1,15 @@
 'use strict'
 
-function instanceItemModel (sequelize, Datatypes) {
+function instanceItemModel (sequelize, DataTypes) {
   const instanceItemModel = sequelize.define(
     'instanceItem', {
-      item_id: Datatypes.INTEGER,
-      talla: Datatypes.STRING,
-      volumen: Datatypes.STRING,
-      color: Datatypes.STRING,
-      precio: Datatypes.STRING,
-      image: Datatypes.STRING,
-      description: Datatypes.STRING
+      item_id: DataTypes.INTEGER,
+      talla: DataTypes.STRING,
+      volumen: DataTypes.STRING,
+      color: DataTypes.STRING,
+      precio: DataTypes.STRING,
+      image: DataTypes.STRING,
+      description: DataTypes.STRING
     }, {
       timestamps: false,
       freezeTableName: false

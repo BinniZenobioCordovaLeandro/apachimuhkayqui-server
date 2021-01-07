@@ -1,11 +1,23 @@
 'use strict'
 
-function itemModel (sequelize, Datatypes) {
+function itemModel (sequelize, DataTypes) {
   const itemModel = sequelize.define(
-    'item', {
-      user_id: Datatypes.INTEGER,
-      description: Datatypes.STRING
-    }, {
+    'item',
+    {
+      user_id: DataTypes.INTEGER,
+      brand: DataTypes.STRING,
+      model: DataTypes.STRING,
+      description: DataTypes.STRING,
+      original_price: DataTypes.DECIMAL,
+      price: DataTypes.DECIMAL,
+      image: {
+        type: DataTypes.BLOB,
+        get: function () {
+          return (this.getDataValue('image')).toString('utf8')
+        }
+      }
+    },
+    {
       timestamps: false,
       freezeTableName: false
     }
@@ -14,10 +26,10 @@ function itemModel (sequelize, Datatypes) {
     itemModel.belongsTo(models.User, {
       foreignKey: 'user_id'
     })
-    itemModel.hasMany(models.InstanceItem, {
+    itemModel.hasMany(models.Offer, {
       foreignKey: 'item_id'
     })
-    itemModel.hasMany(models.Offer, {
+    itemModel.hasMany(models.InstanceItem, {
       foreignKey: 'item_id'
     })
   }

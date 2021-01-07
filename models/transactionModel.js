@@ -1,15 +1,15 @@
 'use strict'
 
-function transactionModel (sequelize, Datatypes) {
+function transactionModel (sequelize, DataTypes) {
   const transactionModel = sequelize.define(
     'transaction', {
-      user_id: Datatypes.INTEGER,
-      order_id: Datatypes.INTEGER,
-      description: Datatypes.TEXT,
-      value: Datatypes.DECIMAL,
-      type: Datatypes.CHAR,
-      timestamp_modified: Datatypes.DATE,
-      timestamp_created: Datatypes.DATE
+      user_id: DataTypes.INTEGER,
+      order_id: DataTypes.INTEGER,
+      description: DataTypes.TEXT,
+      value: DataTypes.DECIMAL,
+      type: DataTypes.CHAR,
+      timestamp_modified: DataTypes.DATE,
+      timestamp_created: DataTypes.DATE
 
     }, {
       timestamps: false,
